@@ -1,2 +1,2 @@
 # rhocs-pull
-Working on tools to grab rhcos releases
+Working on tools to grab rhcos releases and packages
