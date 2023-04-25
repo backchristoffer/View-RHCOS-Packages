@@ -13,41 +13,36 @@ URL3 = os.getenv('URL3')
 getdiffocp = os.getenv('getdiffocp')
 getrhcos_streams = os.getenv('getrhcos_streams')
 
-# Render HTML as because of the js script on the rhcos release page
-session = HTMLSession()
-r = session.get(URL3, verify=False)
-r.html.render()
-renderedhtml = r.html.html
+def getPackages(url=str):
+    package_list = []
+    session = HTMLSession()
+    r = session.get(url, verify=False)
+    r.html.render()
+    renderedhtml = r.html.html
+    soup = BeautifulSoup(renderedhtml, 'lxml')
+    buildinfo = soup.find("div", id="buildinfo")
+    tables = buildinfo.find_all(['th', 'tr'])
+    for row in tables:
+        cells = row.findChildren('td')
+        for cell in cells:
+            value = cell.string
+            package_list.append(value)
+    return package_list
 
-# Setting up bs4 to use the rendered html above
-soup = BeautifulSoup(renderedhtml, 'lxml')
+def createDataFile(input=str):
+    with open(r'data.txt', 'w') as fp:
+        for item in input:
+            fp.write("%s\n" % item)
+        print('data.txt created')
 
-# It is one big table with many rows - Need to sort these 
-package_list = []
-regex_list = []
-buildinfo = soup.find("div", id="buildinfo")
-tables = buildinfo.find_all(['th', 'tr'])
-for row in tables:
-    cells = row.findChildren('td')
-    for cell in cells:
-        value = cell.string
-        package_list.append(value)
-        #print(value)
-
-# I need to write this to a file to handle it locally as well for testing purposes. 
-"""
-with open(r'data.txt', 'w') as fp:
-    for item in package_list:
-        fp.write("%s\n" % item)
-    print('file created')
-"""
-# TO-DO: Move everything to functions asap, it's way too messy at the moment
-# Working with the list down below. Need to use the local file data.txt and sort them in an array
-"""
-lst = list(range(len(package_list)))
-range_list = lst[0::3]
-for i in range_list:
-    for d in package_list:
-        nval = re.search("^{i}-\d+",d)
-        regex_list.append(nval)
-"""
+def readData(input=str):
+    package_list = []
+    with open(input) as file:
+        for i in file:
+            i = i.strip()
+            package_list.append(i)
+    return package_list
+        
+# TO-DO: Sort list by packages in array
+for i in readData("data.txt"):
+    print(i)
