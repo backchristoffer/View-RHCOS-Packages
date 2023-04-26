@@ -42,7 +42,6 @@ def readData(input=str):
             i = i.strip()
             package_list.append(i)
     return package_list
-        
-# TO-DO: Sort list by packages in array
+
 for i in readData("data.txt"):
     print(i)
