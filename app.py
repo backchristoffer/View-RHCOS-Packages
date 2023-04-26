@@ -29,8 +29,8 @@ def getPackages(url=str):
             package_list.append(value)
     return package_list
 
-def createDataFile(input=str):
-    with open(r'data.txt', 'w') as fp:
+def createDataFile(input=str, name=str):
+    with open(r'{}', 'w').format(name) as fp:
         for item in input:
             fp.write("%s\n" % item)
         print('data.txt created')
@@ -43,5 +43,9 @@ def readData(input=str):
             package_list.append(i)
     return package_list
 
-for i in readData("data.txt"):
-    print(i)
+#Working on sorting the packages
+clist = readData("data.txt")
+pname = []
+for i,k,v in zip(clist[::3],clist[1::3],clist[2::3]):
+    pname.extend([i,[k,v]])
+print(pname)
