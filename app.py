@@ -1,8 +1,11 @@
 # All of this is purely for testing - It's a work in progress 
 import urllib3, requests, re, os
 from bs4 import BeautifulSoup
+from flask import Flask, jsonify
 from requests_html import HTMLSession
 from dotenv import load_dotenv
+
+app = Flask(__name__)
 
 # Removing the requests insecure warning for now.
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -43,9 +46,17 @@ def readData(input=str):
             package_list.append(i)
     return package_list
 
-#Working on sorting the packages
-clist = readData("data.txt")
-pname = []
-for i,k,v in zip(clist[::3],clist[1::3],clist[2::3]):
-    pname.extend([i,[k,v]])
-print(pname)
+def generateDict(input=str):
+    clist = input
+    pname = []
+    for i,k,v in zip(clist[::3],clist[1::3],clist[2::3]):
+        pname.extend([[i,k,v]])
+    dic = {i[0]: i[1:3] for i in pname}
+    return dic
+
+@app.route('/')
+def get_data():
+    return jsonify(generateDict(readData("data.txt")))
+
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0', port=8080)
